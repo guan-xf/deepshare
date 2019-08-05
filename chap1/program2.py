@@ -1,6 +1,6 @@
 # /usr/bin/env python
 # -*- coding: utf-8 -*-
-import re
+
 with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', encoding='UTF-8') as fb:
     user_info = dict()
     fb.seek(0)
@@ -11,14 +11,19 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
         user_info[name] = [password, money]
 
     def login():
+        tag = True
+        count_lo = 0
         user_lo = input('请输入账号：').strip()
-        if user_lo in user_info and user_lo not in blacklist:
-            password_lo = input('请输入密码：').strip()
-            count_lo = 0
-            while password_lo != user_info[user_lo][0]:
-                password_lo = input('密码错误，请重新输入：').strip()
-                count_lo += 1
-                if count_lo == 2:
+        if user_lo in user_info:
+            while tag:
+                password_lo = input('请输入密码：').strip()
+                if password_lo == user_info[user_lo][0]:
+                    print('登录成功')
+                    break
+                else:
+                    print('密码输入错误！')
+                    count_lo += 1
+                if count_lo == 3:
                     print('密码输入错误超过3次，账号被锁定！')
                     fb.write(user_lo)
                     fb.write('\n')
@@ -30,7 +35,6 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
                                 continue
                             f_new.write(each)
                     break
-            print('登录成功！')
         elif user_lo in blacklist:
             print('该账户被锁定，不得登录！')
         else:
@@ -68,4 +72,4 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
                     print('薪资输入错误')
 
     if __name__ == '__main__':
-        register()
+        login()
