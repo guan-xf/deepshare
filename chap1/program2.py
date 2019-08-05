@@ -1,7 +1,7 @@
 # /usr/bin/env python
 # -*- coding: utf-8 -*-
-
-with open('account', 'r', encoding='UTF-8') as fa, open('blacklist', 'a+', encoding='UTF-8') as fb:
+import re
+with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', encoding='UTF-8') as fb:
     user_info = dict()
     fb.seek(0)
     blacklist = fb.read().split('\n')
@@ -11,37 +11,61 @@ with open('account', 'r', encoding='UTF-8') as fa, open('blacklist', 'a+', encod
         user_info[name] = [password, money]
 
     def login():
-        user = input('请输入账号：').strip()
-        if user in user_info and user not in blacklist:
-            pass_word = input('请输入密码：').strip()
-            count = 0
-            while pass_word != user_info[user][0]:
-                pass_word = input('密码错误，请重新输入：').strip()
-                count += 1
-                if count == 2:
+        user_lo = input('请输入账号：').strip()
+        if user_lo in user_info and user_lo not in blacklist:
+            password_lo = input('请输入密码：').strip()
+            count_lo = 0
+            while password_lo != user_info[user_lo][0]:
+                password_lo = input('密码错误，请重新输入：').strip()
+                count_lo += 1
+                if count_lo == 2:
                     print('密码输入错误超过3次，账号被锁定！')
-                    fb.write(user)
+                    fb.write(user_lo)
                     fb.write('\n')
                     with open('account', 'r', encoding='UTF-8') as f:
                         lines = f.readlines()
                     with open('account', 'w', encoding='UTF-8') as f_new:
                         for each in lines:
-                            if each.startswith(user):
+                            if each.startswith(user_lo):
                                 continue
                             f_new.write(each)
                     break
             print('登录成功！')
-        elif user in blacklist:
+        elif user_lo in blacklist:
             print('该账户被锁定，不得登录！')
         else:
             print('账号不存在！')
 
-    # def regist():
-    #     user = input('请输入账号：').strip()
-    #     if user in user_info:
-    #         print('当前用户已注册，请登录')
-    #     elif user in
-    #     password = input('请输入密码：').strip()
+    def register():
+        tag = True
+        user_re = input('请输入账号：').strip()
+        if user_re in user_info:
+            print('当前用户已注册，请登录')
+        elif user_re in blacklist:
+            print('当前用户已锁定，不得重复注册！')
+        else:
+            password_re = input('请输入密码：').strip()
+            conf_password = input('请再次输入密码：').strip()
+            count_re = 0
+            while conf_password != password_re:
+                password_re = input('两次输入不一致，请重新输入：').strip()
+                conf_password = input('请再次输入密码：').strip()
+                count_re += 1
+                if count_re == 2:
+                    print('密码输入错误超过3次，请重新注册')
+                    break
+            while tag:
+                salary_str = input('请输入您的薪资：')
+                try:
+                    if '.' in salary_str:
+                        salary = float(salary_str)
+                    else:
+                        salary = int(salary_str)
+                    tag = False
+                    register_info = user_re + '|' + password_re + '|' + str(salary)
+                    fa.write(register_info)
+                except ValueError:
+                    print('薪资输入错误')
 
     if __name__ == '__main__':
-        login()
+        register()
