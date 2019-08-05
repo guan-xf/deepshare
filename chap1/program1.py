@@ -52,45 +52,53 @@ while tag:
     menu1 = menu
     for key in menu1:
         print(key)
-    choice1 = input('第一层>>>:').strip()
-    if choice1 == 'b':
-        break
+    choice1 = input('请输入要查看的内容（退出按q）>>>:').strip()
     if choice1 == 'q':
         tag = False
         continue
-    if choice1 not in menu1:
+    elif choice1 not in menu1:
+        print('无此选项，请重新输入')
         continue
     while tag:
         menu2 = menu1[choice1]
         for key in menu2:
             print(key)
-        choice2 = input('第二层>>>：').strip()
+        choice2 = input('请输入要查看的内容（退出按q，返回上一级按b）>>>：').strip()
         if choice2 == 'b':
             break
-        if choice2 == 'q':
+        elif choice2 == 'q':
             tag = False
             continue
-        if choice2 not in menu2:
+        elif choice2 not in menu2:
+            print('无此选项，请重新输入')
             continue
         while tag:
             menu3 = menu2[choice2]
             for key in menu3:
                 print(key)
-            choice3 = input('第三层>>>：').strip()
+            choice3 = input('请输入要查看的内容（退出按q，返回上一级按b）>>>：').strip()
             if choice3 == 'b':
                 break
-            if choice3 == 'q':
+            elif choice3 == 'q':
                 tag = False
                 continue
-            if choice3 not in menu3:
+            elif choice3 not in menu3:
+                print('无此选项，请重新输入')
                 continue
             while tag:
                 menu4 = menu3[choice3]
                 for key in menu4:
                     print(key)
-                choice4 = input('是否继续>>>：').strip()
+                choice4 = input('是否继续？（退出按q，返回上一级按b）>>>：').strip()
                 if choice4 == 'b':
                     break
-                if choice4 == 'q':
+                elif choice4 == 'q':
                     tag = False
                     continue
+                elif choice4 not in menu4:
+                    print('无此选项，请重新输入')
+                    continue
+                else:
+                    print('当前为末级菜单，请选择返回上一级或退出')
+                    continue
+
