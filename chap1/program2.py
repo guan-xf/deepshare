@@ -20,7 +20,6 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
                 if password_lo == user_info[user_lo][0]:
                     print('登录成功')
                     return user_lo
-                    break
                 else:
                     print('密码输入错误！')
                     count_lo += 1
@@ -39,13 +38,15 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
         elif user_lo in blacklist:
             print('该账户被锁定，不得登录！')
         else:
-            print('账号不存在！')
+            print('账号不存在！请注册')
+            register()
 
     def register():
         tag = True
         user_re = input('请输入账号：').strip()
         if user_re in user_info:
             print('当前用户已注册，请登录')
+            login()
         elif user_re in blacklist:
             print('当前用户已锁定，不得重复注册！')
         else:
@@ -53,7 +54,7 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
             conf_password = input('请再次输入密码：').strip()
             count_re = 0
             while conf_password != password_re:
-                password_re = input('两次输入不一致，请重新输入：').strip()
+                password_re = input('两次输入不一致，请重新输入密码：').strip()
                 conf_password = input('请再次输入密码：').strip()
                 count_re += 1
                 if count_re == 2:
@@ -68,14 +69,13 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
                         salary = int(salary_str)
                     tag = False
                     register_info = user_re + '|' + password_re + '|' + str(salary)
-                    fa.write(register_info)
+                    # fa.seek(0)
+                    fa.write('\n' + register_info)
                 except ValueError:
                     print('薪资输入错误')
 
-    def do_shopping(user):
+    def do_shopping(user_given):
         goods_dic = {'apple': 10, 'mac': 10000, 'iphone': 8000, 'lenovo': 30000, 'chicken': 10}
-        shopping = []
-        goods_list = []
         print('商品信息'.center(18, '*'))
         print('商品' + '\t' * 4 + '价格')
         for goods, value in goods_dic.items():
@@ -92,16 +92,16 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
                 continue
             else:
                 cast = goods_dic[choice] * number
-                if cast <= float(user_info[user][1]):
+                if cast <= float(user_info[user_given][1]):
                     print('购买成功！')
-                    float(user_info[user][1]) - cast
-                    user_info[user][1] = str(float(user_info[user][1]) - cast)
+                    float(user_info[user_given][1]) - cast
+                    user_info[user_given][1] = str(float(user_info[user_given][1]) - cast)
                     with open('account', 'r', encoding='UTF-8') as f:
                         lines = f.readlines()
                     with open('account', 'w', encoding='UTF-8') as f_new:
                         for each in lines:
-                            if each.startswith(user):
-                                f_new.write(user + '|' + user_info[user][0] + '|' + user_info[user][1])
+                            if each.startswith(user_given):
+                                f_new.write(user_given + '|' + user_info[user_given][0] + '|' + user_info[user_given][1])
                                 continue
                             f_new.write(each)
                 else:
@@ -110,17 +110,17 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
                         charge = input('请输入要充值的金额：')
                         try:
                             if '.' in charge:
-                                user_info[user][1] = str(float(charge) + float(user_info[user][1]))
+                                user_info[user_given][1] = str(float(charge) + float(user_info[user_given][1]))
 
                             else:
-                                user_info[user][1] = str(int(charge) + int(user_info[user][1]))
+                                user_info[user_given][1] = str(int(charge) + int(user_info[user_given][1]))
 
                             with open('account', 'r', encoding='UTF-8') as f:
                                 lines = f.readlines()
                             with open('account', 'w', encoding='UTF-8') as f_new:
                                 for each in lines:
-                                    if each.startswith(user):
-                                        f_new.write(user + '|' + user_info[user][0] + '|' + user_info[user][1])
+                                    if each.startswith(user_given):
+                                        f_new.write(user_given + '|' + user_info[user_given][0] + '|' + user_info[user_given][1])
                                         continue
                                     f_new.write(each)
                         except ValueError:
@@ -135,6 +135,20 @@ with open('account', 'r+', encoding='UTF-8') as fa, open('blacklist', 'a+', enco
 
 
     if __name__ == '__main__':
-
-        do_shopping(login())
-
+        flag = True
+        while flag:
+            print('请选择需要的操作')
+            oper = input('1.登录\n2.注册\n')
+            if oper in ['1', '2']:
+                if oper == '1':
+                    user = login()
+                    if user:
+                        do_shopping(user)
+                    else:
+                        flag = False
+                elif oper == '2':
+                    register()
+                    continue
+                else:
+                    print('无此选项，系统退出')
+        # register()
